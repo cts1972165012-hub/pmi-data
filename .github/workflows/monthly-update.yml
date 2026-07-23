@@ -1,0 +1,77 @@
+# ============================================================
+# 每月自动更新全球制造业PMI数据
+# 触发：每月5号 03:00 (UTC，即北京时间11:00) + 支持手动触发
+# 流程：下载最新报告PDF -> 转成图片 -> 提交到仓库 -> 创建Issue提醒录入数据
+# ============================================================
+name: Monthly PMI Update
+
+on:
+  schedule:
+    # 每月5号 UTC 03:00（北京时间 11:00）
+    - cron: '0 3 5 * *'
+  workflow_dispatch:  # 允许手动触发，方便测试
+
+permissions:
+  contents: write      # 提交文件
+  issues: write        # 创建Issue
+
+jobs:
+  fetch-and-prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出仓库
+        uses: actions/checkout@v4
+
+      - name: 安装依赖
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq poppler-utils
+          pip install --quiet requests
+
+      - name: 下载最新PMI报告并生成图片
+        id: fetch
+        run: |
+          python3 scripts/fetch_report.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 提交报告图片到仓库
+        run: |
+          git config user.name "pmi-bot"
+          git config user.email "pmi-bot@users.noreply.github.com"
+          git add data/reports/ data/latest_report.json || true
+          if git diff --cached --quiet; then
+            echo "没有新的报告文件，跳过提交"
+          else
+            git commit -m "chore: 添加 $(date +%Y-%m) PMI报告图片 [skip ci]"
+            git push
+          fi
+
+      - name: 创建Issue提醒录入数据
+        run: |
+          MONTH=$(python3 -c "import json;print(json.load(open('data/latest_report.json'))['data_month'])")
+          IMG=$(python3 -c "import json;print(json.load(open('data/latest_report.json'))['image_path'])")
+          BODY=$(cat <<EOF
+          ## 新报告已下载
+
+          - 数据月份：${MONTH}
+          - 报告图片：${IMG}
+
+          ### 下一步操作
+          1. 打开上方图片（报告第2页国家排行柱状图）
+          2. 读取各国PMI数值（精度约±0.2）
+          3. 运行 python3 scripts/update_data.py 按提示录入，或直接编辑 data/data.json
+          4. 运行 python3 scripts/build_html.py 重新构建
+          5. 提交并推送，GitHub Pages 将自动更新
+
+          也可以把图片和 data/data.json 发给你本地的 AI agent，让它帮你完成读取和录入。
+
+          （此Issue由自动化工作流创建）
+          EOF
+          )
+          gh issue create \
+            --title "📊 待录入：${MONTH} PMI数据" \
+            --body "$BODY" \
+            --label "data-entry" || echo "Issue创建失败（可能label不存在），跳过"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,0 +1,17 @@
+{
+  "month": "7月",
+  "headline": 52.0,
+  "output": 52.8,
+  "note": "示例：增长动能延续，亚太持续领跑",
+  "source_url": "https://www.pmi.spglobal.com/Public/Home/PressRelease/xxxxxxxx",
+  "countries": {
+    "印度": 54.5,
+    "中国台湾": 55.0,
+    "荷兰": 55.2,
+    "日本": 54.6,
+    "美国": 53.8,
+    "中国大陆": 51.6,
+    "德国": 50.2,
+    "波兰": 46.8
+  }
+}

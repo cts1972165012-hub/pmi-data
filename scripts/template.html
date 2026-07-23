@@ -1,0 +1,601 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全球制造业PMI · 机械出口市场风向标（每月自动更新）</title>
+<script>/*__CHARTJS__*/</script>
+<style>
+:root{
+  --ink:#0C1B2A; --ink2:#13293E; --paper:#EDF1F4; --card:#FFFFFF;
+  --orange:#E96B1F; --orange-d:#C55611; --orange-l:#FBEADB;
+  --green:#0E9B5F; --green-d:#0A6B43; --red:#D64040; --red-d:#A32B2B;
+  --blue:#1F4E99; --line:#D3DAE1; --mut:#66727F; --txt:#1B2733;
+  --disp:'PingFang SC','Microsoft YaHei','Hiragino Sans GB',sans-serif;
+  --num:'DIN Alternate','Arial Narrow','PingFang SC','Microsoft YaHei',sans-serif;
+  --body:'PingFang SC','Microsoft YaHei','Hiragino Sans GB','Segoe UI',sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  font-family:var(--body); color:var(--txt); font-size:15px; line-height:1.75;
+  background:
+    linear-gradient(rgba(31,78,153,.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(31,78,153,.05) 1px, transparent 1px),
+    var(--paper);
+  background-size:28px 28px, 28px 28px, auto;
+}
+.wrap{max-width:1180px;margin:0 auto;padding:0 26px}
+
+/* ---------- 行情跑马灯 ---------- */
+.ticker{background:var(--ink);border-bottom:3px solid var(--orange);overflow:hidden;white-space:nowrap}
+.ticker-track{display:inline-flex;animation:tick 55s linear infinite;padding:9px 0;will-change:transform}
+.ticker:hover .ticker-track{animation-play-state:paused}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.tk-item{display:inline-flex;align-items:baseline;gap:7px;padding:0 20px;border-right:1px solid rgba(255,255,255,.14);font-family:var(--num);font-size:13px;letter-spacing:.4px;color:#B9C7D4}
+.tk-item b{color:#fff;font-weight:600}
+.tk-up{color:#43D98F;font-weight:600}.tk-dn{color:#FF8B8B;font-weight:600}
+
+/* ---------- 报头 ---------- */
+.masthead{background:var(--ink);color:#fff;position:relative;overflow:hidden}
+.masthead::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(820px 380px at 88% -12%, rgba(233,107,31,.22), transparent 62%),
+    radial-gradient(600px 300px at -8% 110%, rgba(31,78,153,.35), transparent 60%),
+    linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+  background-size:auto,auto,34px 34px,34px 34px}
+.masthead-inner{position:relative;display:flex;justify-content:space-between;align-items:flex-end;gap:40px;padding:58px 26px 46px;flex-wrap:wrap}
+.kicker{font-family:var(--num);font-size:12px;letter-spacing:4px;color:var(--orange);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+.kicker::before{content:"";width:34px;height:2px;background:var(--orange)}
+.display-title{font-family:var(--disp);font-weight:400;font-size:clamp(40px,6vw,72px);line-height:1.08;letter-spacing:2px}
+.display-title em{font-style:normal;color:var(--orange)}
+.mast-sub{margin-top:14px;color:#AEBECA;font-size:15px;max-width:560px}
+.mast-tags{margin-top:20px;display:flex;gap:10px;flex-wrap:wrap}
+.tag{font-family:var(--num);font-size:12px;letter-spacing:1px;padding:5px 12px;border:1px solid rgba(255,255,255,.28);color:#D7E1EA}
+.tag-orange{background:var(--orange);border-color:var(--orange);color:#fff;font-weight:600}
+.big-stat{background:var(--ink2);border:1px solid rgba(255,255,255,.14);border-top:4px solid var(--orange);padding:22px 26px 18px;min-width:270px;box-shadow:0 18px 44px rgba(0,0,0,.35)}
+.big-stat-label{font-size:12px;letter-spacing:2px;color:#93A5B5}
+.big-stat-num{font-family:var(--num);font-weight:700;font-size:76px;line-height:1.05;color:#fff;margin:4px 0 2px}
+.big-stat-delta{font-family:var(--num);font-size:14px;letter-spacing:.5px}
+.big-stat-delta.down{color:#FF8B8B}.big-stat-delta.up{color:#43D98F}
+.spark{display:block;margin:12px 0 6px}
+.big-stat-note{font-size:12px;color:#93A5B5}
+.big-stat-note b{color:var(--orange);font-family:var(--num);font-size:14px}
+.hazard{height:10px;background:repeating-linear-gradient(-45deg,var(--orange) 0 16px,var(--ink) 16px 32px)}
+
+/* ---------- 导读 ---------- */
+.lead{margin:44px auto 8px;display:flex;gap:22px;align-items:flex-start}
+.lead-mark{flex:none;font-family:var(--disp);font-size:20px;color:#fff;background:var(--ink);padding:8px 14px;letter-spacing:4px;box-shadow:4px 4px 0 var(--orange)}
+.lead-text{font-size:16px;color:#33414F;border-left:3px solid var(--orange);padding-left:18px}
+.lead-text b{color:var(--orange-d)}
+
+/* ---------- 章节 ---------- */
+.section{margin:58px auto}
+.sec-head{display:flex;gap:18px;align-items:flex-start;margin-bottom:22px}
+.sec-num{font-family:var(--num);font-weight:700;font-size:46px;line-height:1;color:transparent;-webkit-text-stroke:1.6px var(--orange);flex:none}
+.sec-title{font-family:var(--disp);font-weight:400;font-size:27px;letter-spacing:1px;color:var(--ink)}
+.sec-source{font-size:12px;color:var(--mut);margin-top:4px}
+.sec-source::before{content:"▤ ";color:var(--orange)}
+
+/* ---------- 图表卡片 ---------- */
+.chart-card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:22px 22px 14px;box-shadow:0 6px 22px rgba(12,27,42,.07)}
+.chart-box{position:relative}
+.chart-note{font-size:12px;color:var(--mut);border-top:1px dashed var(--line);margin-top:12px;padding-top:10px}
+
+/* ---------- 月度卡片 ---------- */
+.month-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:16px}
+.m-card{background:var(--card);border:1px solid var(--line);border-top:4px solid var(--green);padding:14px 12px 12px;transition:transform .25s ease,box-shadow .25s ease}
+.m-card.neg{border-top-color:var(--red)}
+.m-card:hover{transform:translateY(-5px);box-shadow:0 12px 26px rgba(12,27,42,.13)}
+.m-card .mm{font-family:var(--disp);font-size:17px;color:var(--ink)}
+.m-card .mv{font-family:var(--num);font-weight:700;font-size:32px;line-height:1.15;color:var(--ink)}
+.m-card .md{font-family:var(--num);font-size:13px}
+.m-card .md.up{color:var(--green)}.m-card .md.dn{color:var(--red)}.m-card .md.fl{color:var(--mut)}
+.m-card .mo{font-size:11.5px;color:var(--mut);margin-top:2px}
+.m-card .mn{font-size:11.5px;color:#41505E;margin-top:8px;border-top:1px dashed var(--line);padding-top:7px;line-height:1.5}
+
+/* ---------- 热力矩阵 ---------- */
+.heat-legend{display:flex;gap:22px;flex-wrap:wrap;font-size:12.5px;color:var(--mut);margin-bottom:12px;align-items:center}
+.lg{display:inline-flex;align-items:center;gap:7px}
+.sw{width:15px;height:15px;display:inline-block;border:1px solid rgba(0,0,0,.12)}
+.sw-g{background:rgba(14,155,95,.55)}.sw-r{background:rgba(214,64,64,.5)}.sw-w{background:var(--blue)}
+.approx{font-family:var(--num);color:var(--orange-d)}
+.heat-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:6px;box-shadow:0 6px 22px rgba(12,27,42,.07)}
+table.heat{border-collapse:collapse;width:100%;min-width:820px;font-size:13px}
+.heat th,.heat td{padding:7px 10px;text-align:center;border-bottom:1px solid #E7EBEF}
+.heat thead th{background:var(--ink);color:#fff;font-family:var(--num);font-weight:600;letter-spacing:1px;font-size:12.5px;position:sticky;top:0}
+.heat td.cn{text-align:left;font-weight:700;color:var(--ink);background:#F7F9FA;position:sticky;left:0;white-space:nowrap;border-right:2px solid var(--line);z-index:2}
+.heat td.avg{font-family:var(--num);font-weight:700;background:#F1F4F6 !important;color:var(--ink) !important;border-left:2px solid var(--line)}
+.heat tbody tr:hover td{outline:1px solid rgba(233,107,31,.55);outline-offset:-1px}
+.heat td.cell{font-family:var(--num);cursor:default;transition:filter .15s}
+.heat td.cell:hover{filter:brightness(1.12)}
+.heat tr.world td.cn{color:var(--blue)}
+.heat-foot{font-size:12px;color:var(--mut);margin-top:10px}
+
+/* ---------- 梯队 ---------- */
+.tier{display:flex;gap:0;background:var(--card);border:1px solid var(--line);border-radius:6px;margin-bottom:12px;overflow:hidden;transition:box-shadow .25s}
+.tier:hover{box-shadow:0 10px 26px rgba(12,27,42,.12)}
+.tier-label{flex:none;width:190px;padding:16px 18px;color:#fff;display:flex;flex-direction:column;justify-content:center;gap:2px}
+.tier-label .tl-t{font-family:var(--disp);font-size:19px;letter-spacing:2px}
+.tier-label .tl-d{font-size:11px;opacity:.85;font-family:var(--num);letter-spacing:.5px}
+.tier-chips{display:flex;flex-wrap:wrap;gap:8px;padding:14px 18px;align-items:center}
+.chip{font-size:12.5px;padding:5px 11px;border-radius:3px;border:1px solid var(--line);background:#F7F9FA;transition:transform .2s}
+.chip:hover{transform:translateY(-2px)}
+.chip b{font-family:var(--num);margin-left:5px}
+.t-hot .tier-label{background:linear-gradient(135deg,#0A6B43,#0E9B5F)}
+.t-hot .chip b{color:var(--green-d)}
+.t-steady .tier-label{background:linear-gradient(135deg,#17407E,#1F4E99)}
+.t-steady .chip b{color:var(--blue)}
+.t-edge .tier-label{background:linear-gradient(135deg,#9A6A10,#C98A15)}
+.t-edge .chip b{color:#9A6A10}
+.t-con .tier-label{background:linear-gradient(135deg,#8C2626,#D64040)}
+.t-con .chip b{color:var(--red-d)}
+
+/* ---------- 动能 ---------- */
+.mover-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+.mover-card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:18px 20px;border-left:5px solid var(--green)}
+.mover-card.down{border-left-color:var(--red)}
+.mover-title{font-family:var(--disp);font-size:18px;letter-spacing:1px;margin-bottom:8px}
+.mover-card.up .mover-title{color:var(--green-d)}
+.mover-card.down .mover-title{color:var(--red-d)}
+.mover-card p{font-size:13.5px;color:#3A4856}
+.mover-card b{color:var(--ink)}
+
+/* ---------- 行动指引 ---------- */
+.guide-table-wrap{overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:6px;box-shadow:0 6px 22px rgba(12,27,42,.07)}
+table.guide-table{border-collapse:collapse;width:100%;min-width:860px;font-size:13.5px}
+.guide-table th{background:var(--ink);color:#fff;font-family:var(--num);font-weight:600;letter-spacing:1px;padding:12px 16px;text-align:left;font-size:13px}
+.guide-table td{padding:13px 16px;border-bottom:1px solid #E7EBEF;vertical-align:top;color:#33414F}
+.guide-table tbody tr{transition:background .2s}
+.guide-table tbody tr:hover{background:#FBF3EB}
+.g-market{white-space:nowrap;font-size:14.5px;color:var(--ink)}
+.pill{display:inline-block;font-size:11.5px;font-family:var(--num);letter-spacing:.4px;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.pill.g{background:#E1F5EB;color:var(--green-d);border:1px solid #B5E4CD}
+.pill.y{background:#FCF3DC;color:#8A6207;border:1px solid #EED9A4}
+.pill.r{background:#FBE5E5;color:var(--red-d);border:1px solid #F2C4C4}
+.priority-band{margin-top:18px;background:var(--ink);border-radius:6px;padding:20px 24px;position:relative;overflow:hidden}
+.priority-band::after{content:"";position:absolute;left:0;right:0;bottom:0;height:6px;background:repeating-linear-gradient(-45deg,var(--orange) 0 14px,transparent 14px 28px)}
+.priority-label{font-family:var(--disp);color:var(--orange);font-size:17px;letter-spacing:3px;margin-bottom:12px}
+.priority-flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.p-step{font-size:12.5px;padding:8px 14px;color:#fff;border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.06);transition:transform .2s,background .2s}
+.p-step:hover{transform:translateY(-3px);background:rgba(255,255,255,.14)}
+.p1{border-color:#43D98F;color:#7BE8B4}.p2{border-color:#6FA8FF;color:#A8C9FF}
+.p3{border-color:#F2C14E;color:#F6D68A}.p4{border-color:#FF8B8B;color:#FFB3B3}
+.p-arrow{color:var(--orange);font-family:var(--num);font-size:17px}
+
+/* ---------- 来源 ---------- */
+.source-list{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.src-card{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:15px 17px;text-decoration:none;color:var(--txt);display:flex;flex-direction:column;gap:5px;transition:transform .22s,box-shadow .22s,border-color .22s}
+.src-card:hover{transform:translateY(-4px);box-shadow:0 12px 26px rgba(12,27,42,.14);border-color:var(--orange)}
+.src-m{font-family:var(--disp);font-size:17px;color:var(--ink)}
+.src-d{font-family:var(--num);font-size:12px;color:var(--mut);letter-spacing:.5px}
+.src-l{font-size:12px;color:var(--orange-d);font-weight:700}
+.src-l::after{content:" ↗"}
+.method-note{margin-top:16px;background:#FDF6EE;border:1px solid #F0D9BE;border-left:5px solid var(--orange);border-radius:4px;padding:15px 18px;font-size:12.5px;color:#5C4A33;line-height:1.9}
+
+/* ---------- 页脚 ---------- */
+.footer{background:var(--ink);color:#8FA2B3;margin-top:64px;padding:30px 0 34px;border-top:4px solid var(--orange)}
+.footer-line{font-family:var(--disp);color:#fff;font-size:17px;letter-spacing:2px}
+.footer-sub{font-size:12px;margin-top:6px;font-family:var(--num);letter-spacing:.5px}
+
+/* ---------- 提示框 ---------- */
+.tooltip{position:fixed;z-index:99;pointer-events:none;background:var(--ink);color:#fff;font-size:12px;padding:8px 12px;border-radius:4px;border-left:3px solid var(--orange);opacity:0;transform:translateY(4px);transition:opacity .15s,transform .15s;max-width:240px;line-height:1.6;box-shadow:0 8px 22px rgba(0,0,0,.3)}
+.tooltip.show{opacity:1;transform:translateY(0)}
+.tooltip b{font-family:var(--num);font-size:14px}
+
+/* ---------- 滚动渐显 ---------- */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:none}
+
+@media (max-width:900px){
+  .month-grid{grid-template-columns:repeat(3,1fr)}
+  .mover-grid,.source-list{grid-template-columns:1fr}
+  .masthead-inner{align-items:flex-start}
+  .tier{flex-direction:column}
+  .tier-label{width:100%}
+}
+@media (max-width:560px){
+  .month-grid{grid-template-columns:repeat(2,1fr)}
+  .lead{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== 行情 Ticker ===== -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track" id="tickerTrack"></div>
+</div>
+
+<!-- ===== Masthead ===== -->
+<header class="masthead">
+  <div class="wrap masthead-inner">
+    <div class="mast-left">
+      <div class="kicker">全球市场情报 · GLOBAL MARKET INTELLIGENCE</div>
+      <h1 class="display-title">机械出口市场风向标</h1>
+      <div class="mast-sub">基于 J.P.Morgan / S&amp;P Global 全球制造业 PMI 官方报告 · 33个经济体 · 2026年1月—6月</div>
+      <div class="mast-tags">
+        <span class="tag">数据周期 2026 H1</span>
+        <span class="tag tag-orange">6期官方报告</span>
+        <span class="tag">荣枯线 50.0</span>
+      </div>
+    </div>
+    <div class="mast-right">
+      <div class="big-stat">
+        <div class="big-stat-label">全球制造业PMI · 6月</div>
+        <div class="big-stat-num" id="heroNum">0.0</div>
+        <div class="big-stat-delta down">▼ 0.4 较5月</div>
+        <svg class="spark" id="heroSpark" width="200" height="46" viewBox="0 0 200 46"></svg>
+        <div class="big-stat-note">连续 <b>11</b> 个月位于扩张区间</div>
+      </div>
+    </div>
+  </div>
+  <div class="hazard"></div>
+</header>
+
+<!-- ===== 导读 ===== -->
+<section class="wrap lead reveal">
+  <div class="lead-mark">导读</div>
+  <p class="lead-text">2026年上半年，全球制造业PMI从1月的 <b>50.8</b> 一路攀升至5月的 <b>52.5</b>（近五年高位），6月小幅回落至 <b>52.0</b>。上半年33个经济体中，<b>印度、中国台湾、日本、美国、荷兰、爱尔兰</b>等市场持续旺盛，是机械出口的优先目标；<b>波兰、土耳其、罗马尼亚</b>则持续收缩，需谨慎对待。本报告逐月拆解各国PMI数据，为机械商家指明<b>哪些市场值得加码、哪些市场应当收缩</b>。</p>
+</section>
+
+<!-- ===== 01 全球走势 ===== -->
+<section class="wrap section reveal">
+  <div class="sec-head">
+    <span class="sec-num">01</span>
+    <div>
+      <h2 class="sec-title">全球走势：上半年稳步扩张，6月现放缓信号</h2>
+      <div class="sec-source">来源：J.P.Morgan Global Manufacturing PMI 官方新闻稿（每月发布）</div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-box" style="height:340px"><canvas id="trendChart"></canvas></div>
+    <div class="chart-note">全球制造业PMI与产出PMI月度走势 · 虚线为荣枯线50.0 · 数值来自官方报告原文</div>
+  </div>
+  <div class="month-grid" id="monthGrid"></div>
+</section>
+
+<!-- ===== 02 热力矩阵 ===== -->
+<section class="wrap section reveal">
+  <div class="sec-head">
+    <span class="sec-num">02</span>
+    <div>
+      <h2 class="sec-title">33个经济体 PMI 热力矩阵（1—6月）</h2>
+      <div class="sec-source">来源：各期官方报告第2页国家排行柱状图（读数精度约±0.2）· 按上半年均值降序排列</div>
+    </div>
+  </div>
+  <div class="heat-legend">
+    <span class="lg"><i class="sw sw-g"></i>扩张（≥50）</span>
+    <span class="lg"><i class="sw sw-r"></i>收缩（&lt;50）</span>
+    <span class="lg"><i class="sw sw-w"></i>全球综合（WORLD）</span>
+    <span class="lg"><b class="approx">≈</b>&nbsp;= 前后两月均值插补</span>
+  </div>
+  <div class="heat-wrap">
+    <table class="heat" id="heatTable"></table>
+  </div>
+  <div class="heat-foot">注：绿色越深代表扩张越强，红色越深代表收缩越深。标注 ≈ 的数值为该月未发布、按前后两月均值插补的估计值。</div>
+</section>
+
+<!-- ===== 03 市场梯队 ===== -->
+<section class="wrap section reveal">
+  <div class="sec-head">
+    <span class="sec-num">03</span>
+    <div>
+      <h2 class="sec-title">市场梯队：谁在旺盛，谁在收缩</h2>
+      <div class="sec-source">按上半年PMI均值划分梯队 · 数值为插补后计算</div>
+    </div>
+  </div>
+  <div id="tierBands"></div>
+</section>
+
+<!-- ===== 04 动能变化 ===== -->
+<section class="wrap section reveal">
+  <div class="sec-head">
+    <span class="sec-num">04</span>
+    <div>
+      <h2 class="sec-title">动能变化：谁在加速，谁在失速</h2>
+      <div class="sec-source">对比口径：6月PMI − 1月PMI（1月缺失值按2月插补）</div>
+    </div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-box" style="height:420px"><canvas id="momentumChart"></canvas></div>
+    <div class="chart-note">动能变化最大的经济体 · 正值=6月较1月改善，负值=恶化</div>
+  </div>
+  <div class="mover-grid">
+    <div class="mover-card up">
+      <div class="mover-title">▲ 加速上行 · 值得加码</div>
+      <p><b>荷兰（+5.4）</b>从1月50.1一路升至6月55.5，是上半年动能最强的经济体，作为欧洲物流枢纽对机械设备的进口需求持续放大。<b>捷克（+3.9）、意大利（+3.8）、墨西哥（+3.6）、巴西（+3.5）</b>均呈持续修复态势，是"低位反转"型机会市场。</p>
+    </div>
+    <div class="mover-card down">
+      <div class="mover-title">▼ 动能失速 · 需要警惕</div>
+      <p><b>印度尼西亚（−5.2）</b>从1月52.6跌至6月47.4，由扩张转入明显收缩，是上半年失速最快的市场。<b>缅甸（−3.1）、波兰（−2.8）、菲律宾（−2.3）</b>动能同步走弱，机械商家应控制敞口、收紧账期。</p>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 05 商家行动指引 ===== -->
+<section class="wrap section reveal">
+  <div class="sec-head">
+    <span class="sec-num">05</span>
+    <div>
+      <h2 class="sec-title">机械商家行动指引</h2>
+      <div class="sec-source">结合PMI梯队与官方报告分行业结论（投资品增长最强、消费品最弱）</div>
+    </div>
+  </div>
+  <div class="guide-table-wrap">
+    <table class="guide-table">
+      <thead>
+        <tr><th>目标市场</th><th>PMI态势</th><th>推荐机械品类</th><th>策略建议</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="g-market"><b>印度</b></td>
+          <td><span class="pill g">H1均值 54.9 · 持续旺盛</span></td>
+          <td>工程机械、农业机械、机床、食品包装机械</td>
+          <td>PMI连续6个月高于53.8，投资品需求最强。建议加码本地代理与售后网络，对接"印度制造"设备采购需求。</td>
+        </tr>
+        <tr>
+          <td class="g-market"><b>中国台湾 / 日本</b></td>
+          <td><span class="pill g">54.4 / 53.4 · 高位稳定</span></td>
+          <td>精密零部件、自动化设备、电子/半导体制造配套设备</td>
+          <td>精密制造供应链活跃，适合高附加值机械与核心部件出口，注重品质认证与技术对接。</td>
+        </tr>
+        <tr>
+          <td class="g-market"><b>美国</b></td>
+          <td><span class="pill g">53.3 · 5月峰值55.1</span></td>
+          <td>工业设备、能源/矿山机械、仓储物流设备</td>
+          <td>官方报告多次提示客户"战略囤货、前置采购"，订单波动大，需警惕下半年需求透支，避免盲目扩产备货。</td>
+        </tr>
+        <tr>
+          <td class="g-market"><b>荷兰 / 意大利</b></td>
+          <td><span class="pill g">53.1↑ / 51.2 · 欧洲亮点</span></td>
+          <td>环保设备、食品加工机械、包装机械</td>
+          <td>荷兰动能全欧最强且是欧盟物流门户，可以此为支点辐射欧盟；德国（50.6）需求临界偏弱，需精选客户。</td>
+        </tr>
+        <tr>
+          <td class="g-market"><b>东南亚</b></td>
+          <td><span class="pill y">泰53.5 / 越52.1 / 印尼50.2↓</span></td>
+          <td>橡塑机械、纺织机械、建材机械</td>
+          <td>泰国、越南稳健扩张可深耕；印尼由52.6跌至47.4明显转弱，应收紧信用政策、以配件和服务订单为主。</td>
+        </tr>
+        <tr>
+          <td class="g-market"><b>拉美</b></td>
+          <td><span class="pill y">墨48.8↑ / 巴西49.4↑ / 哥51.5</span></td>
+          <td>矿山机械、农业机械、基建工程机械</td>
+          <td>墨西哥受近岸外包带动6月回升至51.1，巴西触底反弹，属于"低位反转"机会，建议小步试探、跟踪验证。</td>
+        </tr>
+        <tr>
+          <td class="g-market"><b>收缩市场</b></td>
+          <td><span class="pill r">波48.3 / 土48.2 / 罗47.5</span></td>
+          <td>以配件、耗材、维修服务为主</td>
+          <td>波兰、土耳其、罗马尼亚、哈萨克斯坦持续收缩，应控制账期与信用风险，暂缓大额设备赊销。</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="priority-band">
+    <div class="priority-label">出口优先级</div>
+    <div class="priority-flow">
+      <span class="p-step p1">第一梯队 · 印度 / 台湾 / 日本 / 美国</span>
+      <span class="p-arrow">→</span>
+      <span class="p-step p2">第二梯队 · 荷兰 / 泰国 / 越南 / 韩国</span>
+      <span class="p-arrow">→</span>
+      <span class="p-step p3">机会梯队 · 墨西哥 / 巴西 / 意大利</span>
+      <span class="p-arrow">→</span>
+      <span class="p-step p4">收缩梯队 · 波兰 / 土耳其 / 印尼</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 06 数据来源 ===== -->
+<section class="wrap section reveal">
+  <div class="sec-head">
+    <span class="sec-num">06</span>
+    <div>
+      <h2 class="sec-title">数据来源与口径说明</h2>
+      <div class="sec-source">全部数据可追溯至以下6期官方报告原文</div>
+    </div>
+  </div>
+  <div class="source-list" id="sourceList"></div>
+  <div class="method-note">
+    <b>口径说明：</b>① 各国PMI数值读取自各期官方报告第2页"国家/地区排行"柱状图，读数精度约±0.2；全球综合PMI（WORLD）与产出PMI取自报告正文，为精确值。② 个别经济体因发布延迟未纳入当月全球计算（如5月缺希腊、印尼、爱尔兰等7国，6月缺加拿大），本表按<b>前后两月均值</b>插补并以 ≈ 标注。③ PMI&gt;50代表制造业活动较上月扩张，&lt;50代表收缩。④ 本报告仅供商业决策参考，不构成投资建议。
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="wrap">
+    <div class="footer-line">全球制造业PMI · 机械出口市场风向标 · 2026年1—6月</div>
+    <div class="footer-sub">数据来源：J.P.Morgan / S&amp;P Global Market Intelligence · pmi.spglobal.com · 生成日期 2026-07-23</div>
+  </div>
+</footer>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+/* ================= 数据（读取自 J.P.Morgan / S&P Global 官方报告柱状图） ================= */
+/*__DATA__*/
+/* 以下变量从注入的 PMI_DATA 派生，保持原有逻辑不变 */
+const MONTHS = PMI_DATA.months;
+const GLOBAL = PMI_DATA.global;
+const RAW = PMI_DATA.countries;
+const SOURCES = PMI_DATA.sources;
+/* ================= 插值：空缺值用前后两月均值代替 ================= */
+function interpolate(v){
+  const out = v.slice();
+  for(let i=0;i<out.length;i++){
+    if(out[i]===null){
+      let prev=null,next=null;
+      for(let j=i-1;j>=0;j--){ if(v[j]!==null){prev=v[j];break;} }
+      for(let j=i+1;j<v.length;j++){ if(v[j]!==null){next=v[j];break;} }
+      if(prev!==null&&next!==null) out[i]=+(((prev+next)/2).toFixed(1));
+      else if(prev!==null) out[i]=prev;
+      else if(next!==null) out[i]=next;
+    }
+  }
+  return out;
+}
+const DATA = RAW.map(c=>({...c, filled:interpolate(c.v)}));
+const isApprox = (c,i)=> c.v[i]===null;
+const avg = a=> +(a.reduce((s,x)=>s+x,0)/a.length).toFixed(1);
+
+/* 按上半年均值降序 */
+const SORTED = DATA.slice().sort((a,b)=>avg(b.filled)-avg(a.filled));
+
+/* ================= 颜色工具 ================= */
+function cellColor(v){
+  if(v>=50){ const t=Math.min((v-50)/6,1); return `rgba(14,155,95,${(0.10+t*0.62).toFixed(2)})`; }
+  const t=Math.min((50-v)/6,1); return `rgba(214,64,64,${(0.10+t*0.55).toFixed(2)})`;
+}
+function cellText(v){ return v>=53.5||v<=46.8 ? '#fff' : (v>=50?'#0A6B43':'#A32B2B'); }
+
+/* ================= 跑马灯 ================= */
+(function(){
+  const items = SORTED.slice(0,18).map(c=>{
+    const last=c.filled[5], d=+(c.filled[5]-c.filled[4]).toFixed(1);
+    const cls=d>0?'tk-up':(d<0?'tk-dn':'');
+    const sign=d>0?'▲':(d<0?'▼':'—');
+    return `<span class="tk-item">${c.zh} <b>${last.toFixed(1)}</b> <span class="${cls}">${sign} ${Math.abs(d).toFixed(1)}</span></span>`;
+  }).join('');
+  document.getElementById('tickerTrack').innerHTML = items + items; /* 复制一份实现无缝滚动 */
+})();
+
+/* ================= 报头大数字 + 迷你走势 ================= */
+(function(){
+  const el=document.getElementById('heroNum'), target=52.2, t0=performance.now();
+  (function step(t){ const p=Math.min((t-t0)/1400,1), e=1-Math.pow(1-p,3);
+    el.textContent=(target*e).toFixed(1); if(p<1) requestAnimationFrame(step); })(t0);
+
+  const svg=document.getElementById('heroSpark'), W=200,H=46,vals=GLOBAL.headline;
+  const lo=Math.min(...vals)-0.5, hi=Math.max(...vals)+0.5;
+  const pts=vals.map((v,i)=>[i/(vals.length-1)*(W-10)+5, H-6-((v-lo)/(hi-lo))*(H-14)]);
+  const path=pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+  svg.innerHTML=`<path d="${path}" fill="none" stroke="#E96B1F" stroke-width="2.5" stroke-linecap="round"/>`+
+    pts.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="${i===pts.length-1?4:2.5}" fill="${i===pts.length-1?'#E96B1F':'#5B7186'}"/>`).join('');
+})();
+
+/* ================= 01 全球走势折线图 ================= */
+new Chart(document.getElementById('trendChart'),{
+  type:'line',
+  data:{ labels:MONTHS, datasets:[
+    { label:'全球制造业PMI', data:GLOBAL.headline, borderColor:'#E96B1F', backgroundColor:'rgba(233,107,31,.12)',
+      borderWidth:3, pointRadius:5, pointBackgroundColor:'#E96B1F', pointBorderColor:'#fff', pointBorderWidth:2,
+      tension:.35, fill:true },
+    { label:'全球产出PMI', data:GLOBAL.output, borderColor:'#1F4E99', backgroundColor:'transparent',
+      borderWidth:2.5, borderDash:[6,4], pointRadius:4, pointBackgroundColor:'#1F4E99', tension:.35 }
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    interaction:{mode:'index',intersect:false},
+    plugins:{ legend:{position:'top',labels:{font:{family:'Noto Sans SC',size:12},usePointStyle:true,boxWidth:8}},
+      tooltip:{backgroundColor:'#0C1B2A',padding:12,titleFont:{family:'Oswald'},
+        callbacks:{label:c=>` ${c.dataset.label}：${c.parsed.y.toFixed(1)}`}} },
+    scales:{ y:{min:49.5,max:54.5,ticks:{font:{family:'Oswald'}},grid:{color:'#E4E9EE'}},
+             x:{ticks:{font:{family:'Noto Sans SC',size:12}},grid:{display:false}} } }
+});
+
+/* ================= 01 月度卡片 ================= */
+(function(){
+  const notes=['温和改善 · 3个月高点','44个月高点 · 亚欧强劲','中东局势扰动 · 增速放缓','4年多新高 · 供应链紧张','近5年高位 · 前置采购','增速放缓 · 信心8个月低点'];
+  const grid=document.getElementById('monthGrid');
+  grid.innerHTML=GLOBAL.headline.map((v,i)=>{
+    const d=i? +(v-GLOBAL.headline[i-1]).toFixed(1):null;
+    const cls=d===null?'fl':(d>0?'up':(d<0?'dn':'fl'));
+    const sign=d===null?'—':(d>0?'▲ +':'▼ ');
+    return `<div class="m-card ${d!==null&&d<0?'neg':''}">
+      <div class="mm">${MONTHS[i]}</div>
+      <div class="mv">${v.toFixed(1)}</div>
+      <div class="md ${cls}">${d===null?'基期':sign+Math.abs(d).toFixed(1)}</div>
+      <div class="mo">产出 ${GLOBAL.output[i].toFixed(1)}</div>
+      <div class="mn">${notes[i]}</div></div>`;
+  }).join('');
+})();
+
+/* ================= 02 热力矩阵 ================= */
+(function(){
+  const t=document.getElementById('heatTable');
+  let h=`<thead><tr><th style="text-align:left;min-width:130px">国家/地区</th>`+
+        MONTHS.map(m=>`<th>${m}</th>`).join('')+`<th>H1均值</th></tr></thead><tbody>`;
+  SORTED.forEach(c=>{
+    const a=avg(c.filled);
+    h+=`<tr><td class="cn">${c.zh}<span style="font-weight:400;color:#8A97A3;font-size:11px;margin-left:6px">${c.en}</span></td>`;
+    c.filled.forEach((v,i)=>{
+      const ap=isApprox(c,i);
+      h+=`<td class="cell" style="background:${cellColor(v)};color:${cellText(v)}"
+           data-tip="<b>${c.zh} · ${MONTHS[i]}</b><br>PMI ${v.toFixed(1)}${ap?'<br><span style=color:#F2C14E>≈ 插补值（前后两月均值）</span>':''}">${ap?'≈':''}${v.toFixed(1)}</td>`;
+    });
+    h+=`<td class="avg" style="color:${a>=50?'#0A6B43':'#A32B2B'}">${a.toFixed(1)}</td></tr>`;
+  });
+  /* WORLD 行 */
+  h+=`<tr class="world"><td class="cn">全球 WORLD<span style="font-weight:400;color:#8A97A3;font-size:11px;margin-left:6px">综合指数</span></td>`;
+  GLOBAL.headline.forEach((v,i)=>{ h+=`<td class="cell" style="background:rgba(31,78,153,.16);color:#17407E"
+      data-tip="<b>全球 · ${MONTHS[i]}</b><br>制造业PMI ${v.toFixed(1)}（官方精确值）">${v.toFixed(1)}</td>`; });
+  h+=`<td class="avg" style="color:#17407E">${avg(GLOBAL.headline).toFixed(1)}</td></tr></tbody>`;
+  t.innerHTML=h;
+})();
+
+/* ================= 03 市场梯队 ================= */
+(function(){
+  const tiers=[
+    {cls:'t-hot',   t:'旺盛市场', d:'H1均值 ≥ 53 · 优先加码', min:53, max:99},
+    {cls:'t-steady',t:'稳健市场', d:'H1均值 51–53 · 持续深耕', min:51, max:53},
+    {cls:'t-edge',  t:'临界市场', d:'H1均值 49.5–51 · 精选客户', min:49.5, max:51},
+    {cls:'t-con',   t:'收缩市场', d:'H1均值 < 49.5 · 控制风险', min:-99, max:49.5}
+  ];
+  document.getElementById('tierBands').innerHTML=tiers.map(t=>{
+    const list=SORTED.filter(c=>{const a=avg(c.filled);return a>=t.min&&a<t.max;});
+    return `<div class="tier ${t.cls}">
+      <div class="tier-label"><div class="tl-t">${t.t}</div><div class="tl-d">${t.d}</div></div>
+      <div class="tier-chips">${list.map(c=>`<span class="chip">${c.zh}<b>${avg(c.filled).toFixed(1)}</b></span>`).join('')||'<span class="chip">—</span>'}</div>
+    </div>`;
+  }).join('');
+})();
+
+/* ================= 04 动能变化图 ================= */
+(function(){
+  const mv=DATA.map(c=>({zh:c.zh, d:+(c.filled[5]-c.filled[0]).toFixed(1)}))
+               .sort((a,b)=>b.d-a.d);
+  const top=[...mv.slice(0,7), ...mv.slice(-5)].sort((a,b)=>b.d-a.d);
+  new Chart(document.getElementById('momentumChart'),{
+    type:'bar',
+    data:{ labels:top.map(x=>x.zh), datasets:[{
+      data:top.map(x=>x.d),
+      backgroundColor:top.map(x=>x.d>=0?'rgba(14,155,95,.75)':'rgba(214,64,64,.75)'),
+      borderColor:top.map(x=>x.d>=0?'#0A6B43':'#A32B2B'), borderWidth:1.5, borderRadius:3 }]},
+    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false},
+        tooltip:{backgroundColor:'#0C1B2A',padding:12,
+          callbacks:{label:c=>` 6月较1月 ${c.parsed.x>0?'+':''}${c.parsed.x.toFixed(1)} 点`}} },
+      scales:{ x:{min:-6,max:6,grid:{color:'#E4E9EE'},ticks:{font:{family:'Oswald'},callback:v=>v>0?'+'+v:v}},
+               y:{grid:{display:false},ticks:{font:{family:'Noto Sans SC',size:12}}} } }
+  });
+})();
+
+/* ================= 06 数据来源卡片 ================= */
+document.getElementById('sourceList').innerHTML=SOURCES.map(s=>
+  `<a class="src-card" href="${s.url}" target="_blank" rel="noopener">
+     <span class="src-m">${s.m}</span><span class="src-d">${s.d}</span>
+     <span class="src-l">查看官方报告原文</span></a>`).join('');
+
+/* ================= 单元格悬浮提示 ================= */
+(function(){
+  const tip=document.getElementById('tooltip');
+  document.addEventListener('mousemove',e=>{
+    const cell=e.target.closest('[data-tip]');
+    if(cell){ tip.innerHTML=cell.dataset.tip; tip.classList.add('show');
+      const x=Math.min(e.clientX+16, innerWidth-260), y=Math.min(e.clientY+16, innerHeight-90);
+      tip.style.left=x+'px'; tip.style.top=y+'px';
+    } else tip.classList.remove('show');
+  });
+})();
+
+/* ================= 滚动渐显 ================= */
+(function(){
+  const io=new IntersectionObserver(es=>es.forEach(e=>{
+    if(e.isIntersecting){ e.target.classList.add('visible'); io.unobserve(e.target); }
+  }),{threshold:.08});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+})();
+</script>
+</body>
+</html>
